@@ -1,0 +1,46 @@
+{
+ "pc": {
+  "distinct_values_per_label": {
+   "Atelectasis": 1736,
+   "Cardiomegaly": 2967,
+   "Consolidation": 1890,
+   "Edema": 1799,
+   "Effusion": 3194,
+   "Pneumonia": 2079,
+   "Pneumothorax": 1140
+  }
+ },
+ "chex": {
+  "distinct_values_per_label": {
+   "Atelectasis": 3218,
+   "Cardiomegaly": 3483,
+   "Consolidation": 2546,
+   "Edema": 2812,
+   "Effusion": 3462,
+   "Pneumonia": 2909,
+   "Pneumothorax": 1715
+  }
+ },
+ "mimic_ch": {
+  "distinct_values_per_label": {
+   "Atelectasis": 2670,
+   "Cardiomegaly": 2658,
+   "Consolidation": 2258,
+   "Edema": 2243,
+   "Effusion": 3093,
+   "Pneumonia": 2016,
+   "Pneumothorax": 1717
+  }
+ },
+ "nih": {
+  "distinct_values_per_label": {
+   "Atelectasis": 2570,
+   "Cardiomegaly": 2533,
+   "Consolidation": 1486,
+   "Edema": 1172,
+   "Effusion": 2840,
+   "Pneumonia": 1468,
+   "Pneumothorax": 1943
+  }
+ }
+}
