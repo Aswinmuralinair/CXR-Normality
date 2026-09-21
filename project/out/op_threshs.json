@@ -1,0 +1,81 @@
+{
+ "pc": {
+  "weights": "densenet121-res224-pc",
+  "torchxrayvision": "1.5.4",
+  "op_threshs": {
+   "Atelectasis": 0.031012505,
+   "Consolidation": 0.013347598,
+   "Infiltration": 0.081435576,
+   "Pneumothorax": 0.001262615,
+   "Edema": 0.002587246,
+   "Emphysema": 0.0035944257,
+   "Fibrosis": 0.0023071,
+   "Effusion": 0.055412333,
+   "Pneumonia": 0.044385884,
+   "Pleural_Thickening": 0.042766232,
+   "Cardiomegaly": 0.043258056,
+   "Nodule": 0.037629247,
+   "Mass": 0.005658899,
+   "Hernia": 0.0091741895,
+   "": null,
+   "Fracture": 0.026507627
+  }
+ },
+ "chex": {
+  "weights": "densenet121-res224-chex",
+  "torchxrayvision": "1.5.4",
+  "op_threshs": {
+   "Atelectasis": 0.1988969,
+   "Consolidation": 0.05710573,
+   "": null,
+   "Pneumothorax": 0.0531293,
+   "Edema": 0.1435217,
+   "Effusion": 0.27212676,
+   "Pneumonia": 0.07749717,
+   "Cardiomegaly": 0.19712369,
+   "Lung Lesion": 0.09932402,
+   "Fracture": 0.09273402,
+   "Lung Opacity": 0.3270967,
+   "Enlarged Cardiomediastinum": 0.10888247
+  }
+ },
+ "mimic_ch": {
+  "weights": "densenet121-res224-mimic_ch",
+  "torchxrayvision": "1.5.4",
+  "op_threshs": {
+   "Atelectasis": 0.09121389,
+   "Consolidation": 0.010573786,
+   "": null,
+   "Pneumothorax": 0.005023008,
+   "Edema": 0.003698257,
+   "Effusion": 0.08001232,
+   "Pneumonia": 0.037242252,
+   "Cardiomegaly": 0.05006329,
+   "Lung Lesion": 0.019866971,
+   "Fracture": 0.03823637,
+   "Lung Opacity": 0.11303808,
+   "Enlarged Cardiomediastinum": 0.0069147074
+  }
+ },
+ "nih": {
+  "weights": "densenet121-res224-nih",
+  "torchxrayvision": "1.5.4",
+  "op_threshs": {
+   "Atelectasis": 0.039117552,
+   "Consolidation": 0.0034529066,
+   "Infiltration": 0.11396341,
+   "Pneumothorax": 0.0057298196,
+   "Edema": 0.00045666535,
+   "Emphysema": 0.0018880932,
+   "Fibrosis": 0.012037827,
+   "Effusion": 0.038744126,
+   "Pneumonia": 0.0037213727,
+   "Pleural_Thickening": 0.014730946,
+   "Cardiomegaly": 0.016149804,
+   "Nodule": 0.054241467,
+   "Mass": 0.037198864,
+   "Hernia": 0.0004403434,
+   "": null
+  }
+ }
+}
