@@ -1,0 +1,39 @@
+{
+  "pathologies": [
+    "Atelectasis",
+    "Consolidation",
+    "Infiltration",
+    "Pneumothorax",
+    "Edema",
+    "Emphysema",
+    "Fibrosis",
+    "Effusion",
+    "Pneumonia",
+    "Pleural_Thickening",
+    "Cardiomegaly",
+    "Nodule",
+    "Mass",
+    "Hernia",
+    "",
+    "Fracture",
+    "",
+    ""
+  ],
+  "usable_nih14": [
+    "Atelectasis",
+    "Consolidation",
+    "Infiltration",
+    "Pneumothorax",
+    "Edema",
+    "Emphysema",
+    "Fibrosis",
+    "Effusion",
+    "Pneumonia",
+    "Pleural_Thickening",
+    "Cardiomegaly",
+    "Nodule",
+    "Mass",
+    "Hernia"
+  ],
+  "n_rows": 112120
+}

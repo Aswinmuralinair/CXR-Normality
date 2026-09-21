@@ -1,0 +1,17 @@
+# Large inputs and derived arrays. The README says how to regenerate each one.
+project/data/
+project/out/feats_*.npy
+project/out/rev3_scores_*.npz
+project/out/cache_*.npy
+
+# Outside test X-rays (Indiana University collection, non-commercial licence)
+project/test images/
+
+# Local environments and caches
+project/.venv/
+__pycache__/
+.pytest_cache/
+*.log
+.DS_Store
+Thumbs.db
+*.mp4

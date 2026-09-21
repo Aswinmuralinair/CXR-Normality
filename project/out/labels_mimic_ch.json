@@ -1,0 +1,32 @@
+{
+  "pathologies": [
+    "Atelectasis",
+    "Consolidation",
+    "",
+    "Pneumothorax",
+    "Edema",
+    "",
+    "",
+    "Effusion",
+    "Pneumonia",
+    "",
+    "Cardiomegaly",
+    "",
+    "",
+    "",
+    "Lung Lesion",
+    "Fracture",
+    "Lung Opacity",
+    "Enlarged Cardiomediastinum"
+  ],
+  "usable_nih14": [
+    "Atelectasis",
+    "Consolidation",
+    "Pneumothorax",
+    "Edema",
+    "Effusion",
+    "Pneumonia",
+    "Cardiomegaly"
+  ],
+  "n_rows": 112120
+}
