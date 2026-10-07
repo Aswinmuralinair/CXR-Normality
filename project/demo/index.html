@@ -1,0 +1,1321 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CXR-Normality Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06080b;
+  --glow: rgba(64, 160, 230, 0.10);
+  --panel: #111519;
+  --panel-2: #171c22;
+  --panel-3: #1e242b;
+  --line: rgba(255, 255, 255, 0.06);
+  --line-2: rgba(255, 255, 255, 0.11);
+  --text: #e9eef3;
+  --text-2: #aab4c0;
+  --muted: #6e7a87;
+  --accent: #62c3f3;
+  --accent-2: #2f7fc4;
+  --accent-ink: #04202f;
+  --accent-soft: rgba(98, 195, 243, 0.12);
+  --clear: #43d79c;
+  --clear-soft: rgba(67, 215, 156, 0.12);
+  --clear-ink: #03261a;
+  --refer: #ffb54d;
+  --refer-soft: rgba(255, 181, 77, 0.12);
+  --refer-ink: #2f1d02;
+  --na: #59636e;
+  --stage: #020406;
+  --card-glass: rgba(10, 30, 48, 0.78);
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  --radius: 14px;
+  --font: "Poppins", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #edf1f5;
+  --glow: rgba(47, 127, 196, 0.10);
+  --panel: #ffffff;
+  --panel-2: #f4f7fa;
+  --panel-3: #e9eef3;
+  --line: rgba(12, 32, 52, 0.08);
+  --line-2: rgba(12, 32, 52, 0.14);
+  --text: #0e1822;
+  --text-2: #3e4b59;
+  --muted: #6b7784;
+  --accent: #1c8bd0;
+  --accent-2: #1767a6;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(28, 139, 208, 0.10);
+  --clear: #0d9a62;
+  --clear-soft: rgba(13, 154, 98, 0.10);
+  --clear-ink: #ffffff;
+  --refer: #c27100;
+  --refer-soft: rgba(194, 113, 0, 0.10);
+  --refer-ink: #ffffff;
+  --na: #9aa4ae;
+  --stage: #05090d;
+  --card-glass: rgba(10, 30, 48, 0.80);
+  --shadow: 0 14px 40px rgba(20, 40, 60, 0.14);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body {
+  background: radial-gradient(1200px 500px at 50% -120px, var(--glow), transparent 70%), var(--bg);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+button { font: inherit; color: inherit; }
+h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+.mono { font-family: var(--mono); }
+
+/* ---------- top bar */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 16px 24px; max-width: 1680px; margin: 0 auto;
+}
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.logo {
+  width: 38px; height: 38px; border-radius: 11px; flex: none;
+  display: grid; place-items: center; color: var(--accent);
+  background: linear-gradient(145deg, rgba(98,195,243,0.22), rgba(47,127,196,0.08));
+  border: 1px solid var(--line-2);
+}
+.wordmark { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+.wordmark span { color: var(--accent); }
+.tagline { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px;
+  font-size: 12px; color: var(--text-2); background: var(--panel); border: 1px solid var(--line-2); white-space: nowrap;
+}
+.chip.warn { color: var(--refer); border-color: color-mix(in srgb, var(--refer) 40%, transparent); background: var(--refer-soft); }
+.chip.dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--clear); box-shadow: 0 0 8px var(--clear); }
+.mode { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.switch {
+  width: 40px; height: 22px; border-radius: 999px; border: 1px solid var(--line-2); padding: 0; cursor: pointer;
+  background: var(--panel-3); position: relative; transition: background .2s;
+}
+.switch::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--text-2); transition: transform .2s, background .2s;
+}
+.switch[aria-checked="true"] { background: var(--accent-soft); }
+.switch[aria-checked="true"]::after { transform: translateX(18px); background: var(--accent); }
+
+/* ---------- layout */
+.layout {
+  display: grid; grid-template-columns: 290px minmax(0, 1fr) 360px; gap: 18px;
+  padding: 0 24px 24px; max-width: 1680px; margin: 0 auto; align-items: start;
+}
+.rail { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.center { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px; min-width: 0;
+}
+.panel > h3 { font-size: 13px; font-weight: 500; color: var(--text-2); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+.hint { color: var(--muted); font-size: 12px; margin: -4px 0 12px; }
+.label { color: var(--muted); font-size: 12px; margin: 14px 0 8px; }
+
+/* ---------- study / upload */
+.drop {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center;
+  padding: 18px 12px; border-radius: 12px; cursor: pointer;
+  border: 1.5px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+  background: var(--accent-soft); color: var(--text-2); transition: border-color .15s, background .15s;
+}
+.drop:hover, .drop.over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 18%, transparent); }
+.drop strong { color: var(--text); font-weight: 500; }
+.drop small { color: var(--muted); font-size: 11px; }
+.drop svg { color: var(--accent); }
+.samples { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.sample {
+  display: grid; grid-template-columns: 42px 1fr; gap: 10px; align-items: center; text-align: left;
+  padding: 6px; border-radius: 10px; border: 1px solid transparent; background: none; cursor: pointer;
+}
+.sample:hover { background: var(--panel-2); }
+.sample.on { background: var(--panel-2); border-color: var(--line-2); }
+.sample img { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; filter: url(#duo); background: var(--stage); }
+.sample .t { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.25; }
+.sample .s { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+/* ---------- option lists */
+.opts { display: flex; flex-direction: column; gap: 6px; }
+.opt {
+  display: flex; align-items: flex-start; gap: 10px; width: 100%; text-align: left; cursor: pointer;
+  padding: 9px 10px; border-radius: 10px; background: var(--panel-2); border: 1px solid transparent;
+}
+.opt:hover { border-color: var(--line-2); }
+.opt .radio { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--muted); flex: none; margin-top: 2px; }
+.opt.on { border-color: color-mix(in srgb, var(--accent) 55%, transparent); background: var(--accent-soft); }
+.opt.on .radio { border-color: var(--accent); background: radial-gradient(circle, var(--accent) 0 4px, transparent 5px); }
+.opt .t { display: block; font-size: 13px; font-weight: 500; line-height: 1.3; }
+.opt .s { display: block; font-size: 11px; color: var(--muted); line-height: 1.35; margin-top: 2px; }
+.opt .tag { font-size: 10px; padding: 1px 6px; border-radius: 6px; margin-left: 6px; vertical-align: 1px; background: var(--panel-3); color: var(--text-2); font-weight: 500; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.seg button {
+  padding: 7px 0; border-radius: 9px; border: 1px solid var(--line-2); background: var(--panel-2); cursor: pointer;
+  font-family: var(--mono); font-size: 13px;
+}
+.seg button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 500; }
+.seg button:disabled { opacity: .35; cursor: not-allowed; }
+
+/* ---------- image settings */
+.slider { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; margin-bottom: 12px; font-size: 12px; color: var(--text-2); }
+.slider output { font-family: var(--mono); color: var(--muted); }
+.slider input { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); }
+.toggle-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-2); padding: 5px 0; }
+
+/* ---------- viewer */
+.viewer { padding: 0; overflow: hidden; }
+.viewer-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.viewer-head .file { font-weight: 500; font-size: 14px; font-family: var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.viewer-head .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.stage {
+  position: relative; background: var(--stage); aspect-ratio: 16 / 10; min-height: 340px;
+  display: grid; place-items: center; overflow: hidden;
+}
+.stage::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(98,195,243,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(98,195,243,0.05) 1px, transparent 1px);
+  background-size: 32px 32px; mask-image: radial-gradient(circle at 50% 50%, transparent 30%, #000 80%);
+}
+.stage img.xray {
+  height: 100%; max-width: 100%; object-fit: contain; display: block; position: relative;
+  image-rendering: auto; transition: filter .2s;
+}
+.stage.card-on { place-items: center start; }   /* image to the left, verdict card to the right */
+.overlay-pill {
+  position: absolute; top: 14px; left: 14px; z-index: 3;
+  display: flex; align-items: center; gap: 10px; padding: 6px 8px 6px 14px; border-radius: 999px;
+  background: var(--accent); color: var(--accent-ink); font-weight: 500; font-size: 13px; border: 0; cursor: pointer;
+  box-shadow: 0 6px 24px rgba(98, 195, 243, 0.35);
+}
+:root[data-theme="light"] .overlay-pill { color: #fff; }
+.overlay-pill i { width: 30px; height: 18px; border-radius: 999px; background: rgba(4, 32, 47, 0.25); position: relative; }
+.overlay-pill i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: transform .2s; }
+.overlay-pill[aria-pressed="true"] i::after { transform: translateX(12px); }
+.corner { position: absolute; bottom: 12px; left: 14px; z-index: 2; font-family: var(--mono); font-size: 11px; color: rgba(190, 228, 250, 0.75); }
+
+.vcard {
+  position: absolute; right: 18px; bottom: 18px; width: 300px; z-index: 3;
+  border-radius: 12px; overflow: hidden; box-shadow: var(--shadow);
+  background: var(--card-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(120, 190, 240, 0.25); color: #e8f4fc;
+  transition: opacity .2s, transform .2s;
+}
+.vcard.hide { opacity: 0; transform: translateY(8px); pointer-events: none; }
+.vcard header { display: flex; justify-content: space-between; align-items: center; padding: 9px 14px; font-size: 12px; font-weight: 500;
+  background: linear-gradient(90deg, #2a6aa8, #3a8dd2); }
+.vcard header span:last-child { font-family: var(--mono); font-weight: 400; opacity: .9; }
+.vcard .body { padding: 14px; }
+.vcard .over { font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: rgba(190, 228, 250, 0.7); }
+.vcard .big { font-size: 38px; font-weight: 300; color: #7fd0f7; letter-spacing: -0.02em; line-height: 1.15; font-family: var(--font); }
+.vcard .big b { font-weight: 300; color: rgba(127, 208, 247, 0.6); }
+.vcard .cap { font-size: 13px; font-weight: 500; margin-top: 4px; }
+.vcard hr { border: 0; border-top: 1px solid rgba(160, 210, 245, 0.18); margin: 12px 0; }
+.vline { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; color: rgba(225, 240, 250, 0.8); margin: 6px 0; }
+.vcard .go {
+  display: block; width: 100%; margin-top: 12px; padding: 9px 0; border: 0; border-radius: 8px; cursor: pointer;
+  background: #6cc6f4; color: #04202f; font-weight: 600; font-size: 13px;
+}
+.vcard .go:hover { background: #8ad3f7; }
+
+.empty { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: var(--muted); z-index: 1; padding: 24px; }
+.empty strong { color: var(--text-2); font-weight: 500; display: block; margin-bottom: 4px; }
+.scan { position: absolute; inset: 0; z-index: 4; pointer-events: none; display: none; background: rgba(2, 6, 10, 0.35); }
+.stage.busy .scan { display: block; }
+.stage.busy .empty { visibility: hidden; }
+.scan::before { content: ""; position: absolute; left: 0; right: 0; height: 90px; top: -90px;
+  background: linear-gradient(to bottom, transparent, rgba(98, 195, 243, 0.35) 85%, rgba(160, 225, 255, 0.9));
+  animation: scan 1.3s linear infinite; }
+.scan span { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 7px 14px; border-radius: 999px;
+  background: rgba(4, 18, 28, 0.85); color: #bfe6fb; font-size: 12px; border: 1px solid rgba(98, 195, 243, 0.4); }
+@keyframes scan { to { top: 100%; } }
+.viewer-foot { display: flex; justify-content: space-between; gap: 10px; padding: 10px 16px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); flex-wrap: wrap; }
+
+/* ---------- verdict pills */
+.pill {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 10px; border-radius: 8px;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap;
+}
+.pill.clear { background: var(--clear); color: var(--clear-ink); }
+.pill.refer { background: var(--refer); color: var(--refer-ink); }
+.pill.na { background: var(--panel-3); color: var(--muted); }
+.mini { font-size: 10.5px; padding: 3px 7px; border-radius: 6px; font-weight: 600; letter-spacing: .03em; }
+.mini.clear { background: var(--clear-soft); color: var(--clear); }
+.mini.refer { background: var(--refer-soft); color: var(--refer); }
+
+/* ---------- section heads */
+.sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+.sec-head h2 { font-size: 17px; }
+.sec-head p { margin: 2px 0 0; color: var(--muted); font-size: 12px; max-width: 640px; }
+.summary-badge { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-2); }
+
+/* ---------- score cards */
+.score-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 12px; }
+.score-card {
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px;
+  display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden;
+}
+.score-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--na); }
+.score-card.clear::before { background: var(--clear); }
+.score-card.refer::before { background: var(--refer); }
+.score-card.na { opacity: .7; }
+.sc-head { display: flex; gap: 10px; align-items: flex-start; }
+.code {
+  font-family: var(--mono); font-size: 12px; font-weight: 500; padding: 3px 7px; border-radius: 7px;
+  background: var(--accent-soft); color: var(--accent); flex: none; min-width: 36px; text-align: center;
+}
+.cname { font-weight: 500; font-size: 13.5px; line-height: 1.25; }
+.formula { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+.sc-value { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.sc-value .v { font-size: 28px; font-weight: 300; letter-spacing: -0.02em; font-family: var(--font); }
+.sc-value .m { font-family: var(--mono); font-size: 11.5px; color: var(--muted); text-align: right; }
+.gauge { position: relative; height: 6px; border-radius: 999px; background: var(--panel-3); }
+.gauge .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: linear-gradient(90deg, var(--accent-2), var(--accent)); }
+.gauge .tick { position: absolute; top: -4px; bottom: -4px; width: 2px; border-radius: 2px; background: var(--text); box-shadow: 0 0 0 2px var(--panel-2); }
+.sc-thr { font-size: 11.5px; color: var(--text-2); display: flex; justify-content: space-between; gap: 8px; }
+.sc-thr .mono { color: var(--text); }
+.sc-foot { font-size: 11.5px; color: var(--muted); line-height: 1.45; border-top: 1px solid var(--line); padding-top: 9px; }
+.sc-foot b { color: var(--text-2); font-weight: 500; }
+.sc-driver { font-size: 11.5px; color: var(--text-2); }
+.sc-driver b { color: var(--accent); font-weight: 500; }
+.scores-panel { container-type: inline-size; container-name: scores; }
+.score-note { border: 1px dashed var(--line-2); border-radius: 12px; padding: 14px; font-size: 12px; color: var(--text-2); line-height: 1.55; }
+.score-note h4 { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: var(--text); }
+.score-note p { margin: 0 0 8px; }
+.score-note p:last-child { margin: 0; }
+.score-note b { color: var(--text); font-weight: 500; }
+@container scores (min-width: 669px) and (max-width: 895.98px) { .score-note { grid-column: span 2; } }
+
+/* ---------- matrix */
+.matrix-wrap { overflow-x: auto; }
+table.matrix { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12.5px; min-width: 640px; }
+.matrix th, .matrix td { padding: 8px 8px; text-align: center; border-bottom: 1px solid var(--line); }
+.matrix thead th { color: var(--muted); font-weight: 500; font-size: 11.5px; }
+.matrix thead tr:first-child th { color: var(--text-2); font-size: 12px; }
+.matrix thead th.t { cursor: pointer; font-family: var(--mono); border-radius: 8px 8px 0 0; }
+.matrix thead th.t:hover { color: var(--text); }
+.matrix th.row { text-align: left; font-weight: 400; white-space: nowrap; }
+.matrix th.row .code { margin-right: 8px; }
+.matrix .sel { background: var(--accent-soft); }
+.matrix thead th.t.sel { color: var(--accent); }
+.matrix tbody tr:last-child td, .matrix tbody tr:last-child th { border-bottom: 0; }
+.matrix td .x { color: var(--na); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 11.5px; color: var(--muted); align-items: center; }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+
+/* ---------- findings */
+.fgroup { margin-bottom: 14px; }
+.fgroup:last-child { margin-bottom: 0; }
+.fgroup-h { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.frow { padding: 8px 0; border-bottom: 1px solid var(--line); }
+.frow:last-child { border-bottom: 0; }
+.frow-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.fname { font-size: 13px; font-weight: 500; }
+.fval { font-family: var(--mono); font-size: 13px; }
+.fbar { position: relative; height: 4px; border-radius: 999px; background: var(--panel-3); margin: 6px 0 5px; }
+.fbar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: var(--accent); }
+.fbar i.scored { background: linear-gradient(90deg, var(--accent-2), var(--accent)); }
+.fbar i.other { background: var(--muted); }
+.fbar i.above { background: var(--refer); }
+.fbar b { position: absolute; top: -3px; bottom: -3px; width: 2px; border-radius: 2px; background: var(--text); opacity: .75; }
+.faxis { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted); margin: 0 0 10px; padding-bottom: 6px; border-bottom: 1px dashed var(--line-2); }
+.fmeta { font-size: 11px; color: var(--muted); font-family: var(--mono); display: flex; flex-wrap: wrap; gap: 2px 10px; }
+.frow.untrained .fname, .frow.untrained .fval { color: var(--muted); }
+.tag-a { font-size: 10px; padding: 1px 6px; border-radius: 6px; margin-left: 6px; background: var(--accent-soft); color: var(--accent); font-weight: 500; vertical-align: 1px; }
+
+/* ---------- truth panel */
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 12.5px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; color: var(--text); }
+.flist { display: flex; flex-wrap: wrap; gap: 5px; }
+.flist span { font-size: 11px; padding: 2px 8px; border-radius: 6px; background: var(--panel-3); color: var(--text-2); }
+.flist span.c7 { background: var(--refer-soft); color: var(--refer); }
+.match { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+.match-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; font-size: 12px; padding: 4px 0; align-items: center; }
+.match-row .mono { color: var(--text-2); font-size: 11.5px; }
+.note { font-size: 11.5px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+.rule-note { font-size: 12.5px; color: var(--text-2); line-height: 1.55; }
+.rule-note p { margin: 0 0 10px; }
+
+footer { max-width: 1680px; margin: 0 auto; padding: 4px 24px 28px; color: var(--muted); font-size: 11.5px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; z-index: 50;
+  background: var(--panel-3); color: var(--text); border: 1px solid var(--line-2); padding: 10px 16px; border-radius: 10px;
+  box-shadow: var(--shadow); font-size: 13px; transition: opacity .2s, transform .2s; max-width: calc(100vw - 32px);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- view switch */
+.viewtabs { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line-2); }
+.viewtabs button { border: 0; background: none; padding: 5px 14px; border-radius: 999px; font-size: 12.5px; color: var(--text-2); cursor: pointer; }
+.viewtabs button.on { background: var(--accent); color: var(--accent-ink); font-weight: 500; }
+body.view-simple .layout, body.view-simple footer.detailed, body.view-simple #deviceChip { display: none; }
+body.view-detailed .simple { display: none; }
+
+/* ---------- simple view */
+.simple { max-width: 1480px; margin: 0 auto; padding: 0 24px 28px; display: flex; flex-direction: column; gap: 18px; }
+.s-lead { margin: 0; font-size: 15px; color: var(--text-2); max-width: 980px; line-height: 1.6; }
+.s-lead b { color: var(--text); font-weight: 500; }
+.s-lead a { color: var(--accent); }
+.s-grid { display: grid; grid-template-columns: 290px minmax(0, 1fr) 400px; gap: 18px; align-items: start; }
+.step { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 12px; font-weight: 600; margin-right: 8px; flex: none; }
+.simple .panel > h3, .simple .sec-head h2 { display: flex; align-items: center; font-size: 15px; color: var(--text); font-weight: 600; }
+.simple .panel > h3 { justify-content: flex-start; }
+.simple .panel > h3 .chip { margin-left: auto; }
+.s-pick .samples { margin-top: 0; }
+.s-pick .sample .t { font-size: 13.5px; }
+.s-pick .sample .s { font-family: var(--font); font-size: 11.5px; }
+.s-pick .drop { margin-top: 12px; padding: 12px; flex-direction: row; justify-content: center; }
+.s-view { padding: 0; overflow: hidden; }
+.s-stage { aspect-ratio: 1 / 1; min-height: 0; max-height: 600px; width: 100%; }
+.s-stage img.xray { height: 100%; width: auto; }
+.s-file { display: flex; justify-content: space-between; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+.s-head { font-size: 22px; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
+.s-head .c { color: var(--clear); } .s-head .r { color: var(--refer); }
+.s-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 4px; }
+.s-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 9px; border-radius: 8px; font-weight: 500; }
+.s-badge.clear { background: var(--clear-soft); color: var(--clear); }
+.s-badge.refer { background: var(--refer-soft); color: var(--refer); }
+.s-badge .code { padding: 1px 5px; min-width: 0; font-size: 11px; background: rgba(127,127,127,.15); color: inherit; }
+.s-sub { font-size: 13.5px; color: var(--text-2); margin: 8px 0 0; line-height: 1.55; }
+.s-report { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.s-report .flist { margin: 6px 0 8px; }
+.s-report .flist span { font-size: 12px; padding: 3px 9px; }
+.s-call { margin-top: 12px; padding: 12px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.5; border: 1px solid var(--line-2); background: var(--panel-2); }
+.s-call b { font-weight: 600; }
+.s-call.good { border-color: color-mix(in srgb, var(--clear) 45%, transparent); background: var(--clear-soft); }
+.s-call.bad { border-color: rgba(255, 107, 107, .5); background: rgba(255, 107, 107, .10); }
+.s-call.meh { border-color: color-mix(in srgb, var(--refer) 45%, transparent); background: var(--refer-soft); }
+.s-call.note { font-size: 12.5px; color: var(--text-2); }
+.s-rule { margin-top: 16px; padding-top: 4px; border-top: 1px solid var(--line); }
+.s-rule .label { display: flex; align-items: center; gap: 6px; }
+.s-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.s-opts .opt { flex-direction: column; gap: 3px; padding: 10px 12px; }
+.s-opts .opt .t { font-size: 14px; }
+.seg.two { grid-template-columns: 1fr 1fr; }
+.seg.two button { font-family: var(--font); }
+button.q { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--panel-2); color: var(--muted); font-size: 11px; line-height: 1; padding: 0; cursor: help; flex: none; }
+button.q:hover { color: var(--accent); border-color: var(--accent); }
+.s-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.s-card { background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; }
+.s-card::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--na); }
+.s-card.clear::before { background: var(--clear); }
+.s-card.refer::before { background: var(--refer); }
+.s-card .sc-head .cname { font-size: 15px; font-weight: 600; }
+.s-card .how { font-size: 12.5px; color: var(--text-2); line-height: 1.5; margin: 0; }
+.s-nums { display: flex; gap: 22px; align-items: baseline; }
+.s-nums div { display: flex; flex-direction: column; }
+.s-nums small { font-size: 11px; color: var(--muted); }
+.s-nums span { font-size: 26px; font-weight: 300; letter-spacing: -0.02em; }
+.s-meter { position: relative; height: 12px; border-radius: 999px; overflow: visible; margin: 6px 0 2px; }
+.s-meter .z { position: absolute; top: 0; bottom: 0; }
+.s-meter .z.r { left: 0; background: var(--refer-soft); border-radius: 999px 0 0 999px; border: 1px solid color-mix(in srgb, var(--refer) 35%, transparent); }
+.s-meter .z.c { right: 0; background: var(--clear-soft); border-radius: 0 999px 999px 0; border: 1px solid color-mix(in srgb, var(--clear) 35%, transparent); }
+.s-meter .ln { position: absolute; top: -6px; bottom: -6px; width: 2px; margin-left: -1px; background: var(--text); border-radius: 2px; }
+.s-meter .dot { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--accent); border: 2px solid var(--panel-2); box-shadow: 0 0 0 1px var(--accent); }
+.s-axis { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
+.s-axis em { font-style: normal; font-family: var(--font); }
+.s-card .pill { align-self: flex-start; font-size: 12px; padding: 7px 12px; }
+.s-test { font-size: 12.5px; color: var(--text-2); line-height: 1.6; border-top: 1px solid var(--line); padding-top: 10px; }
+.s-test b { color: var(--text); font-weight: 500; }
+.s-test .ok { color: var(--clear); font-weight: 500; } .s-test .no { color: #ff6b6b; font-weight: 500; }
+.s-out { font-size: 12.5px; font-weight: 500; padding: 7px 10px; border-radius: 9px; }
+.s-out.good { background: var(--clear-soft); color: var(--clear); }
+.s-out.bad { background: rgba(255, 107, 107, .12); color: #ff6b6b; }
+.s-out.meh { background: var(--refer-soft); color: var(--refer); }
+.s-bottom { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.s-frow { display: grid; grid-template-columns: minmax(0, 1fr) 70px; gap: 4px 12px; padding: 7px 0; border-bottom: 1px solid var(--line); align-items: center; }
+.s-frow:last-child { border-bottom: 0; }
+.s-frow .n { font-size: 13.5px; font-weight: 500; }
+.s-frow .n small { font-weight: 400; color: var(--muted); font-size: 11.5px; margin-left: 6px; }
+.s-frow .v { font-family: var(--mono); font-size: 13px; text-align: right; }
+.s-frow .fbar { grid-column: 1 / -1; margin: 0; height: 6px; }
+.s-words dl { margin: 0; display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 0; font-size: 13px; }
+.s-words dt, .s-words dd { margin: 0; padding: 8px 0; border-bottom: 1px solid var(--line); line-height: 1.5; }
+.s-words dt { font-weight: 500; color: var(--text); padding-right: 12px; }
+.s-words dd { color: var(--text-2); }
+.s-words dt.flash, .s-words dd.flash { background: var(--accent-soft); transition: background .3s; }
+.s-words dt:nth-last-child(2), .s-words dd:last-child { border-bottom: 0; }
+.s-more { font-size: 12.5px; color: var(--muted); margin: 12px 0 0; }
+.s-more button { border: 0; background: none; color: var(--accent); padding: 0; cursor: pointer; font-size: 12.5px; }
+footer.simple-foot { max-width: 1480px; margin: 0 auto; padding: 0 24px 28px; color: var(--muted); font-size: 11.5px; }
+body.view-detailed footer.simple-foot { display: none; }
+
+/* ---------- responsive */
+@media (max-width: 1320px) {
+  .s-grid { grid-template-columns: 270px minmax(0, 1fr); }
+  .s-answer { grid-column: 1 / -1; }
+}
+@media (max-width: 1100px) {
+  .s-cards { grid-template-columns: minmax(0, 1fr); }
+  .s-bottom { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 860px) {
+  .simple { padding: 0 16px 20px; }
+  .s-grid { grid-template-columns: minmax(0, 1fr); }
+  .s-stage { max-height: none; }
+  .s-stage img.xray { width: 100%; height: auto; }
+  .s-pick .samples { flex-direction: row; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
+  .s-pick .sample { flex: 0 0 210px; scroll-snap-align: start; background: var(--panel-2); }
+  .s-words dl { grid-template-columns: minmax(0, 1fr); }
+  .s-words dt { border-bottom: 0; padding-bottom: 0; }
+  footer.simple-foot { padding: 0 16px 24px; }
+}
+@media (max-width: 1320px) {
+  .layout { grid-template-columns: 270px minmax(0, 1fr); }
+  .rail.right { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: start; }
+}
+@media (max-width: 860px) {
+  .topbar { padding: 14px 16px; flex-wrap: wrap; }
+  .layout { grid-template-columns: minmax(0, 1fr); padding: 0 16px 16px; }
+  .rail.left { display: contents; }
+  .p-study { order: 0; } .p-ck { order: 2; } .p-rule { order: 3; } .p-img { order: 5; }
+  .center { order: 1; }
+  .rail.right { order: 4; grid-template-columns: minmax(0, 1fr); }
+  .stage { aspect-ratio: auto; min-height: 260px; }
+  .vcard { position: relative; right: auto; bottom: auto; width: auto; margin: 0; border-radius: 0; }
+  .stage { display: block; }
+  .stage img.xray { height: auto; width: 100%; max-height: none; }
+  .tagline { display: none; }
+  footer { padding: 4px 16px 24px; }
+}
+@media (prefers-reduced-motion: reduce) { .scan::before { animation: none; top: 40%; } * { transition: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="duo" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values=".299 .587 .114 0 0  .299 .587 .114 0 0  .299 .587 .114 0 0  0 0 0 1 0"/>
+    <feComponentTransfer>
+      <feFuncR type="table" tableValues="0.008 0.05 0.22 0.62 0.93"/>
+      <feFuncG type="table" tableValues="0.02 0.14 0.45 0.83 0.98"/>
+      <feFuncB type="table" tableValues="0.035 0.26 0.68 0.95 1"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+        <path d="M16 4v11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M14.2 12.5c-1.6-3.2-6.2-4-7.8.2-1.7 4.6-2.4 10.2-.6 12.6 1.6 2.1 6.8 1.2 8-1.6.6-1.4.6-7.6.4-11.2z" fill="currentColor" opacity=".85"/>
+        <path d="M17.8 12.5c1.6-3.2 6.2-4 7.8.2 1.7 4.6 2.4 10.2.6 12.6-1.6 2.1-6.8 1.2-8-1.6-.6-1.4-.6-7.6-.4-11.2z" fill="currentColor" opacity=".85"/>
+      </svg>
+    </div>
+    <div style="min-width:0">
+      <div class="wordmark">CXR<span>·</span>Normality</div>
+      <div class="tagline">Can a chest X-ray AI safely say "normal"? A live view of the study's seven normality scores</div>
+    </div>
+  </div>
+  <div class="top-right">
+    <span class="chip warn">Research demonstration. Not for clinical use.</span>
+    <span class="chip dot" id="deviceChip">connecting</span>
+    <div class="viewtabs" id="viewTabs" role="tablist" aria-label="View">
+      <button data-view="simple" role="tab">Simple</button><button data-view="detailed" role="tab">Detailed</button>
+    </div>
+    <div class="mode"><span>Light</span><button class="switch" id="themeSwitch" role="switch" aria-checked="true" aria-label="Dark mode"></button><span>Dark</span></div>
+  </div>
+</header>
+
+<!-- simple view: one model, three scores, two rules, plain words -->
+<main class="simple" id="simpleView">
+  <p class="s-lead">Pick a chest X-ray. The page runs the study's AI models on it and shows whether the X-ray would be <b>auto-cleared</b>, meaning marked normal with no doctor reading it, and whether that would have been the right call.</p>
+  <div class="s-grid">
+    <section class="panel s-pick">
+      <h3><span class="step">1</span>Pick an X-ray</h3>
+      <div class="samples" id="sSamples"></div>
+      <label class="drop" id="sDrop">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+        <strong>Or upload your own</strong>
+        <input type="file" id="sFileInput" accept=".png,.jpg,.jpeg,.bmp,.tif,.tiff,.webp,image/*" hidden>
+      </label>
+    </section>
+
+    <section class="panel s-view">
+      <div class="stage s-stage" id="sStage">
+        <img class="xray" id="sXray" alt="Chest X-ray under review" hidden>
+        <div class="empty" id="sEmpty"><div><strong>No X-ray yet</strong>Pick one of the samples on the left, or upload your own.</div></div>
+        <div class="scan"><span>Running the AI models</span></div>
+      </div>
+      <div class="s-file"><span id="sFile">No X-ray loaded</span><span id="sFile2"></span></div>
+    </section>
+
+    <section class="panel s-answer">
+      <h3><span class="step">2</span>What would happen to it?</h3>
+      <div id="sAnswer"><p class="s-sub" style="margin:0">Pick an X-ray to see the answer.</p></div>
+      <div class="s-rule">
+        <div class="label">How the line is drawn <button class="q" data-g="rule" title="Every score needs a cut-off line. The rule decides where it goes.">?</button></div>
+        <div class="s-opts" id="sRule"></div>
+        <div class="label">The promise: how many of every 100 cleared X-rays must be normal <button class="q" data-g="promise" title="95 in 100 means at most 5 sick X-rays in every 100 cleared.">?</button></div>
+        <div class="seg two" id="sPromise"></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel s-cards-panel" id="sCardsPanel">
+    <div class="sec-head">
+      <div>
+        <h2><span class="step">3</span>Three scores, three decisions</h2>
+        <p>Each score turns the AI's findings into one number between 0 and 1, where higher means more likely normal. Each score has its own cut-off line, and an X-ray at or above the line is auto-cleared.</p>
+      </div>
+    </div>
+    <div class="s-cards" id="sCards"></div>
+    <p class="s-more">The study compared seven scores, four AI models and three rules. <button id="sToDetailed">The Detailed view shows all of them.</button></p>
+  </section>
+
+  <div class="s-bottom">
+    <section class="panel" id="sSeen">
+      <h3>What the AI saw <span class="chip" style="font-size:11px;padding:2px 8px">PadChest model</span></h3>
+      <p class="hint">The chance the AI gives each of the seven findings that decide "normal" in this project. Bars are scaled to the largest.</p>
+      <div id="sFindings"><p class="note" style="margin:0">Pick an X-ray to see this.</p></div>
+    </section>
+    <section class="panel s-words" id="sWords">
+      <h3>Words on this page</h3>
+      <dl id="sGloss"></dl>
+    </section>
+  </div>
+</main>
+
+<main class="layout">
+  <!-- left rail -->
+  <aside class="rail left">
+    <section class="panel p-study">
+      <h3>Study</h3>
+      <label class="drop" id="drop">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+        <strong>Drop a chest X-ray here</strong>
+        <span>or click to choose a file</span>
+        <small>PNG, JPEG, BMP, TIFF or WebP. Frontal view.</small>
+        <input type="file" id="file" accept=".png,.jpg,.jpeg,.bmp,.tif,.tiff,.webp,image/*" hidden>
+      </label>
+      <div class="label">Sample studies from the test split</div>
+      <div class="samples" id="samples"></div>
+    </section>
+
+    <section class="panel p-ck">
+      <h3>Checkpoint</h3>
+      <div class="opts" id="ckList"></div>
+    </section>
+
+    <section class="panel p-rule">
+      <h3>Decision rule</h3>
+      <div class="opts" id="procList"></div>
+      <div class="label">Target NPV</div>
+      <div class="seg" id="targetList"></div>
+    </section>
+
+    <section class="panel p-img">
+      <h3>Image settings</h3>
+      <div class="slider"><span>Contrast</span><output id="cOut">100%</output><input type="range" id="contrast" min="50" max="200" value="100"></div>
+      <div class="slider"><span>Brightness</span><output id="bOut">100%</output><input type="range" id="bright" min="50" max="170" value="100"></div>
+      <div class="toggle-row"><span>Blue tone</span><button class="switch" id="duoSwitch" role="switch" aria-checked="true" aria-label="Blue tone"></button></div>
+      <div class="toggle-row"><span>Show the 224 px model input</span><button class="switch" id="inputSwitch" role="switch" aria-checked="false" aria-label="Show model input"></button></div>
+      <p class="note" style="margin-top:6px">These change the display only. The model always sees the uploaded image, converted to grayscale and resized to 224 &times; 224 exactly as the dataset was.</p>
+    </section>
+  </aside>
+
+  <!-- centre -->
+  <section class="center">
+    <div class="panel viewer">
+      <div class="viewer-head">
+        <div class="file" id="fileName">No study loaded</div>
+        <div class="chips" id="viewerChips"></div>
+      </div>
+      <div class="stage" id="stage">
+        <img class="xray" id="xray" alt="Chest X-ray under review" hidden>
+        <button class="overlay-pill" id="overlayBtn" aria-pressed="true" hidden>Verdict card <i></i></button>
+        <div class="corner" id="corner"></div>
+        <div class="empty" id="empty"><div><strong>No study loaded</strong>Upload a chest X-ray or pick a sample study on the left.</div></div>
+        <div class="vcard hide" id="vcard"></div>
+        <div class="scan"><span>Running four checkpoints</span></div>
+      </div>
+      <div class="viewer-foot"><span id="footLeft">Waiting for an image</span><span id="footRight"></span></div>
+    </div>
+
+    <section class="panel scores-panel">
+      <div class="sec-head">
+        <div>
+          <h2>Normality scores</h2>
+          <p id="scoresSub">Seven ways to turn per-finding probabilities into one "normal" score, each with its threshold under the selected rule.</p>
+        </div>
+        <div class="summary-badge" id="scoreSummary"></div>
+      </div>
+      <div class="score-grid" id="scoreGrid"></div>
+    </section>
+
+    <section class="panel" id="matrixPanel">
+      <div class="sec-head">
+        <div>
+          <h2>Every rule in the study</h2>
+          <p>Verdicts for this study under each threshold procedure and target. Click a column to make it the selected rule.</p>
+        </div>
+      </div>
+      <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+      <div class="legend">
+        <span><span class="mini clear">CLEAR</span> auto-clear</span>
+        <span><span class="mini refer">REFER</span> send to radiologist</span>
+        <span><span class="mini refer">REFER*</span> no threshold passes, so the rule clears nothing</span>
+        <span><span class="x">&middot;</span> not run in the study</span>
+      </div>
+    </section>
+  </section>
+
+  <!-- right rail -->
+  <aside class="rail right">
+    <section class="panel">
+      <h3>Per-finding probabilities <span class="chip" id="ckChip" style="font-size:11px;padding:2px 8px"></span></h3>
+      <p class="hint">Probabilities after undoing torchxrayvision's op_norm warp, which moves each finding's operating point to 0.5 (pipeline step 9). The first seven feed the normality scores. Bars use a log scale; the tick marks the finding's operating point, and an amber bar sits above it.</p>
+      <div id="findings"></div>
+    </section>
+
+    <section class="panel">
+      <h3>Ground truth and pipeline match</h3>
+      <div id="truth"><p class="note" style="margin:0">Load a study to see this.</p></div>
+    </section>
+
+    <section class="panel">
+      <h3>About the selected rule</h3>
+      <div class="rule-note" id="ruleInfo"></div>
+    </section>
+  </aside>
+</main>
+
+<footer class="simple-foot">"Normal" in this project means none of seven findings in the radiologist's report: atelectasis, cardiomegaly, consolidation, edema, effusion, pneumonia and pneumothorax. The lines were chosen on the NIH ChestX-ray14 dataset and do not carry over to another hospital's X-rays.</footer>
+<footer class="detailed">
+  <span>"Normal" here means none of seven findings: atelectasis, cardiomegaly, consolidation, edema, effusion, pneumonia and pneumothorax. A lung mass counts as normal. Labels come from report text.</span>
+  <span id="buildInfo"></span>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const nice = l => l.replace(/_/g, " ");
+const store = {
+  get(k) { try { return localStorage.getItem("cxrn-" + k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem("cxrn-" + k, v); } catch (e) {} },
+};
+
+const state = {
+  meta: null, res: null, src: null, sample: null,
+  ck: "pc", proc: "empirical", target: "0.95",
+  view: "simple", sRule: "empirical", sTarget: "0.95",
+  contrast: 100, bright: 100, duo: true, showInput: false, overlay: true,
+};
+
+const ICON = {
+  check: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  refer: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></svg>',
+};
+
+function pct(p, digits) {
+  if (p === null || p === undefined) return "n/a";
+  const v = p * 100;
+  if (digits !== undefined) return v.toFixed(digits) + "%";
+  if (v < 0.1) return v.toFixed(3) + "%";
+  if (v < 1) return v.toFixed(2) + "%";
+  return v.toFixed(1) + "%";
+}
+const f4 = x => (x === null || x === undefined) ? "n/a" : x.toFixed(4);
+const ckMeta = () => state.meta.checkpoints.find(c => c.key === state.ck);
+const procMeta = (k = state.proc) => state.meta.procedures.find(p => p.key === k);
+const live = () => state.res ? state.res.results[state.ck] : null;
+
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toast.h);
+  toast.h = setTimeout(() => t.classList.remove("show"), 4200);
+}
+
+function cell(cons, proc = state.proc, target = state.target) {
+  const r = ckMeta().rules[cons][proc];
+  if (!r || !r[target]) return { run: false };
+  const L = live();
+  return { run: true, ...r[target], clear: L ? L.verdicts[cons][proc][target] : null };
+}
+
+/* ---------- theme */
+function applyTheme(t) {
+  document.documentElement.dataset.theme = t;
+  $("#themeSwitch").setAttribute("aria-checked", t === "dark" ? "true" : "false");
+  store.set("theme", t);
+}
+$("#themeSwitch").onclick = () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+
+/* ---------- controls */
+function renderControls() {
+  const m = state.meta;
+  $("#ckList").innerHTML = m.checkpoints.map(c => `
+    <button class="opt ${c.key === state.ck ? "on" : ""}" data-ck="${c.key}">
+      <span class="radio"></span>
+      <span><span class="t">${esc(c.name)}${c.key === "pc" ? '<span class="tag">headline</span>' : ""}${c.key === "nih" ? '<span class="tag">leakage contrast</span>' : ""}</span>
+      <span class="s">${c.key === "nih" ? "Trained on this dataset, so it is never counted" : c.key === "pc" ? "Trained on PadChest; leads every table" : "Trained outside this dataset"}${c.trained.length < 14 ? ` &middot; ${c.trained.length} of the 14 findings` : ""}</span></span>
+    </button>`).join("");
+  $("#ckList").querySelectorAll(".opt").forEach(b => b.onclick = () => { state.ck = b.dataset.ck; renderAll(); });
+
+  const tagline = { empirical: "Point estimate, no guarantee", bonferroni: "The formal guarantee", fixed_sequence: "Sensitivity analysis" };
+  $("#procList").innerHTML = m.procedures.map(p => `
+    <button class="opt ${p.key === state.proc ? "on" : ""}" data-proc="${p.key}">
+      <span class="radio"></span>
+      <span><span class="t">${esc(p.name)}</span><span class="s">${tagline[p.key]}</span></span>
+    </button>`).join("");
+  $("#procList").querySelectorAll(".opt").forEach(b => b.onclick = () => selectRule(b.dataset.proc, state.target));
+
+  const all = ["0.95", "0.98", "0.99"];
+  const ok = procMeta().targets;
+  $("#targetList").innerHTML = all.map(t => `<button data-t="${t}" class="${t === state.target ? "on" : ""}" ${ok.includes(t) ? "" : "disabled title='The study ran Learn-Then-Test at 0.95 and 0.98 only'"}>${t}</button>`).join("");
+  $("#targetList").querySelectorAll("button").forEach(b => b.onclick = () => selectRule(state.proc, b.dataset.t));
+}
+
+function selectRule(proc, target) {
+  const ok = procMeta(proc).targets;
+  state.proc = proc;
+  state.target = ok.includes(target) ? target : ok[0];
+  renderAll();
+}
+
+function renderSamples() {
+  const box = $("#samples");
+  box.innerHTML = state.meta.samples.map((s, i) => `
+    <button class="sample ${state.sample && state.sample.file === s.file ? "on" : ""}" data-i="${i}" title="${esc(s.caption)}">
+      <img src="/samples/${encodeURIComponent(s.file)}" alt="">
+      <span><span class="t">${esc(s.title)}</span><br><span class="s">${esc(s.file)}</span></span>
+    </button>`).join("") || '<p class="note" style="margin:0">No samples found. Run 16_demo_build.py.</p>';
+  box.querySelectorAll(".sample").forEach(b => b.onclick = () => pickSample(state.meta.samples[+b.dataset.i]));
+}
+
+/* ---------- loading an image */
+async function pickSample(s) {
+  try {
+    const url = "/samples/" + encodeURIComponent(s.file);
+    const blob = await (await fetch(url)).blob();
+    await analyze(blob, s.file, url, s);
+  } catch (e) { toast("Could not load the sample: " + e.message); }
+}
+
+async function analyze(blob, name, src, sample) {
+  const stages = document.querySelectorAll(".stage");
+  stages.forEach(s => s.classList.add("busy"));
+  try {
+    const r = await fetch("/api/analyze?name=" + encodeURIComponent(name), { method: "POST", body: blob });
+    let j;
+    try { j = await r.json(); } catch (e) { throw new Error("The server sent an unreadable reply."); }
+    if (!r.ok) throw new Error(j.error || r.statusText);
+    if (state.src && state.src.startsWith("blob:") && state.src !== src) URL.revokeObjectURL(state.src);
+    state.res = j; state.src = src; state.sample = sample || null;
+    renderSamples();
+    renderAll();
+  } catch (e) {
+    if (src.startsWith("blob:")) URL.revokeObjectURL(src);
+    toast(e.message);
+  } finally {
+    stages.forEach(s => s.classList.remove("busy"));
+  }
+}
+
+function useFile(f) {
+  if (!f) return;
+  analyze(f, f.name, URL.createObjectURL(f), null);
+}
+$("#file").onchange = e => { useFile(e.target.files[0]); e.target.value = ""; };
+const drop = $("#drop");
+["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => useFile(e.dataTransfer.files[0]));
+document.addEventListener("dragover", e => e.preventDefault());
+document.addEventListener("drop", e => { e.preventDefault(); if (!drop.contains(e.target)) useFile(e.dataTransfer.files[0]); });
+
+/* ---------- image settings */
+function applyImageSettings() {
+  const img = $("#xray");
+  img.style.filter = `brightness(${state.bright / 100}) contrast(${state.contrast / 100})` + (state.duo ? " url(#duo)" : "");
+  $("#cOut").textContent = state.contrast + "%";
+  $("#bOut").textContent = state.bright + "%";
+}
+$("#contrast").oninput = e => { state.contrast = +e.target.value; applyImageSettings(); };
+$("#bright").oninput = e => { state.bright = +e.target.value; applyImageSettings(); };
+$("#duoSwitch").onclick = e => { state.duo = !state.duo; e.currentTarget.setAttribute("aria-checked", state.duo); applyImageSettings(); };
+$("#inputSwitch").onclick = e => { state.showInput = !state.showInput; e.currentTarget.setAttribute("aria-checked", state.showInput); renderViewer(); };
+$("#overlayBtn").onclick = e => { state.overlay = !state.overlay; e.currentTarget.setAttribute("aria-pressed", state.overlay); renderViewer(); };
+
+/* ---------- viewer and verdict card */
+function counts() {
+  let k = 0, n = 0;
+  for (const c of state.meta.constructions) {
+    const x = cell(c.key);
+    if (!x.run) continue;
+    n += 1; k += x.clear ? 1 : 0;
+  }
+  return { k, n };
+}
+
+function verdictPill(x, short) {
+  if (!x.run) return `<span class="pill na">${short ? "NOT RUN" : "NOT RUN IN THE STUDY"}</span>`;
+  return x.clear
+    ? `<span class="pill clear">${ICON.check}AUTO-CLEAR</span>`
+    : `<span class="pill refer">${ICON.refer}SEND TO RADIOLOGIST</span>`;
+}
+
+function renderViewer() {
+  const R = state.res, img = $("#xray");
+  $("#empty").hidden = !!R;
+  img.hidden = !R;
+  $("#overlayBtn").hidden = !R;
+  if (!R) return;
+  img.src = state.showInput ? R.model_input : state.src;
+  applyImageSettings();
+
+  $("#fileName").textContent = R.file;
+  const chips = [];
+  const [w, h] = R.original_size;
+  chips.push(`<span class="chip">${w} &times; ${h} px</span>`);
+  if (R.known) chips.push(`<span class="chip">${esc(R.known.split)} split &middot; patient ${R.known.patient_id}</span>`);
+  else chips.push(`<span class="chip">Uploaded image</span>`);
+  $("#viewerChips").innerHTML = chips.join("");
+  $("#corner").textContent = state.showInput ? "MODEL INPUT 224 × 224" : (w === 224 && h === 224 ? "224 × 224" : `${w} × ${h}, model sees 224 × 224`);
+
+  const { k, n } = counts();
+  const ck = ckMeta(), pm = procMeta();
+  const a = cell("A"), d = cell("D"), bc = cell("B_cal");
+  const line = (code, name, x) => `<div class="vline"><span>${name} <span class="mono" style="opacity:.7">${code}</span></span>${x.run ? `<span class="mini ${x.clear ? "clear" : "refer"}">${x.clear ? "CLEAR" : "REFER"}</span>` : '<span class="mini" style="opacity:.6">NOT RUN</span>'}</div>`;
+  const vc = $("#vcard");
+  vc.innerHTML = `
+    <header><span>Verdict &middot; ${esc(ck.name)}</span><span>${esc(pm.short)} ${state.target}</span></header>
+    <div class="body">
+      <div class="over">Constructions that auto-clear</div>
+      <div class="big"><b>[</b>${k} / ${n}<b>]</b></div>
+      <div class="cap">${k === 0 ? "Every score sends this study to a radiologist." : k === n ? "Every score would auto-clear this study." : `${k} would auto-clear it and ${n - k} would send it to a radiologist.`}</div>
+      <hr>
+      ${line("A", "Published score", a)}
+      ${line("B_cal", "Calibrated product", bc)}
+      ${line("D", "Direct classifier", d)}
+      <button class="go" id="goMatrix">Compare every rule</button>
+    </div>`;
+  vc.classList.toggle("hide", !state.overlay);
+  $("#stage").classList.toggle("card-on", state.overlay);
+  $("#goMatrix").onclick = () => $("#matrixPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+
+  $("#footLeft").textContent = `Four checkpoints in ${R.inference_ms} ms on ${R.device.toUpperCase()}`;
+  $("#footRight").textContent = R.known ? `Report labels: ${R.known.findings.length ? R.known.findings.map(nice).join(", ") : "no finding"}` : "No report labels for an uploaded image";
+}
+
+/* ---------- score cards */
+function renderScores() {
+  const L = live(), grid = $("#scoreGrid");
+  if (!L) { grid.innerHTML = '<p class="note">Load a study to see its scores.</p>'; $("#scoreSummary").innerHTML = ""; return; }
+  const ck = ckMeta();
+  const { k, n } = counts();
+  $("#scoreSummary").innerHTML = `<span class="pill ${k ? "clear" : "refer"}" style="font-size:11px">${k} of ${n} clear</span><span>${esc(procMeta().short)} at NPV ${state.target}</span>`;
+  grid.innerHTML = state.meta.constructions.map(c => {
+    const x = cell(c.key), s = L.scores[c.key];
+    const cls = !x.run ? "na" : x.clear ? "clear" : "refer";
+    const thr = x.run ? x.threshold : null;
+    let thrLine, foot;
+    if (!x.run) {
+      thrLine = `<span>Threshold</span><span class="mono">not run</span>`;
+      foot = `The study ran Learn-Then-Test on five constructions: A, B, B_cal, C++ and D.`;
+    } else if (thr === null) {
+      thrLine = `<span>Threshold</span><span class="mono">none passes</span>`;
+      foot = `No candidate threshold passes at NPV ${state.target}, so this rule clears nothing and every study goes to a radiologist.`;
+    } else {
+      const m = s - thr;
+      thrLine = `<span>Threshold</span><span class="mono">${f4(thr)}</span>`;
+      foot = x.n
+        ? `On the ${ck.test_images.toLocaleString("en-US")} test images this threshold cleared <b>${pct(x.coverage)}</b>, and <b>${pct(x.npv, 1)}</b> of those were normal. Target ${(+state.target * 100).toFixed(0)}%: <b>${x.holds ? "met" : "missed"}</b>.`
+        : `On the test split this threshold cleared no image.`;
+    }
+    const margin = (x.run && thr !== null) ? `${s - thr >= 0 ? "+" : "−"}${Math.abs(s - thr).toFixed(4)} vs threshold` : "";
+    let driver = "";
+    if (c.key === "A" || c.key === "A_cal") {
+      const lab = L.drivers[c.key];
+      const f = L.findings.find(f => f.label === lab);
+      const v = c.key === "A" ? f.prob : f.calibrated;
+      driver = `<div class="sc-driver">Set by <b>${nice(lab)}</b>, the highest ${c.key === "A" ? "probability" : "calibrated probability"} (${pct(v)})</div>`;
+    }
+    return `
+      <article class="score-card ${cls}" title="${esc(c.note)}">
+        <div class="sc-head"><span class="code">${esc(c.key)}</span><div><div class="cname">${esc(c.name)}</div><div class="formula">${esc(c.formula)}</div></div></div>
+        <div class="sc-value"><span class="v">${f4(s)}</span><span class="m">${margin}</span></div>
+        <div class="gauge"><div class="fill" style="width:${Math.max(0, Math.min(1, s)) * 100}%"></div>${thr !== null && x.run ? `<div class="tick" style="left:calc(${thr * 100}% - 1px)"></div>` : ""}</div>
+        <div class="sc-thr">${thrLine}</div>
+        ${driver}
+        ${verdictPill(x)}
+        <div class="sc-foot">${foot}</div>
+      </article>`;
+  }).join("") + scoreNote();
+}
+
+function scoreNote() {
+  const ck = ckMeta();
+  const cells = state.meta.constructions.map(c => cell(c.key)).filter(x => x.run);
+  const passed = cells.filter(x => x.threshold !== null && x.n > 0);
+  const met = passed.filter(x => x.holds).length;
+  const target = (+state.target * 100).toFixed(0);
+  const result = passed.length
+    ? `<b>${passed.length} of the ${cells.length}</b> thresholds cleared some test studies, and <b>${met}</b> of those kept the promise of ${target}% normal among the studies they cleared.`
+    : `<b>None of the ${cells.length}</b> thresholds cleared a single test study.`;
+  return `
+    <article class="score-note">
+      <h4>How to read a card</h4>
+      <p>Each score is compared with its own threshold, because the seven scores sit on different scales. A study is auto-cleared when its score is at or above the threshold, marked by the tick on the bar.</p>
+      <p>On ${esc(ck.name)} under this rule, ${result}</p>
+    </article>`;
+}
+
+/* ---------- matrix */
+function renderMatrix() {
+  const L = live(), t = $("#matrix");
+  const procs = state.meta.procedures;
+  let h1 = `<tr><th rowspan="2" style="text-align:left">Construction</th>`, h2 = "<tr>";
+  for (const p of procs) {
+    h1 += `<th colspan="${p.targets.length}">${esc(p.short)}</th>`;
+    for (const tg of p.targets) {
+      const sel = p.key === state.proc && tg === state.target ? "sel" : "";
+      h2 += `<th class="t ${sel}" data-p="${p.key}" data-t="${tg}">${tg}</th>`;
+    }
+  }
+  let body = "";
+  for (const c of state.meta.constructions) {
+    body += `<tr><th class="row"><span class="code">${esc(c.key)}</span>${esc(c.name)}</th>`;
+    for (const p of procs) {
+      for (const tg of p.targets) {
+        const sel = p.key === state.proc && tg === state.target ? "sel" : "";
+        const x = cell(c.key, p.key, tg);
+        let inner;
+        if (!x.run) inner = '<span class="x">&middot;</span>';
+        else if (!L) inner = "";
+        else if (x.threshold === null) inner = '<span class="mini refer" title="No threshold passes at this target">REFER*</span>';
+        else inner = `<span class="mini ${x.clear ? "clear" : "refer"}" title="score ${f4(L.scores[c.key])}, threshold ${f4(x.threshold)}">${x.clear ? "CLEAR" : "REFER"}</span>`;
+        body += `<td class="${sel}">${inner}</td>`;
+      }
+    }
+    body += "</tr>";
+  }
+  t.innerHTML = `<thead>${h1}</tr>${h2}</tr></thead><tbody>${body}</tbody>`;
+  t.querySelectorAll("th.t").forEach(th => th.onclick = () => selectRule(th.dataset.p, th.dataset.t));
+}
+
+/* ---------- findings */
+function renderFindings() {
+  const L = live(), box = $("#findings");
+  $("#ckChip").textContent = ckMeta().name;
+  if (!L) { box.innerHTML = '<p class="note" style="margin:0">Load a study to see this.</p>'; return; }
+  const order = (a, b) => (b.prob ?? -1) - (a.prob ?? -1);
+  const pos = p => Math.max(0, Math.min(1, (Math.log10(Math.max(p, 1e-4)) + 4) / 4)) * 100;   // 0.01% to 100%
+  const row = f => {
+    if (!f.trained) return `<div class="frow untrained"><div class="frow-top"><span class="fname">${nice(f.label)}</span><span class="fval">n/a</span></div><div class="fmeta">Not trained on this checkpoint</div></div>`;
+    const tag = L.drivers.A === f.label ? '<span class="tag-a">sets A</span>' : "";
+    const above = f.prob >= f.op_threshold;
+    return `
+      <div class="frow">
+        <div class="frow-top"><span class="fname">${nice(f.label)}${tag}</span><span class="fval">${pct(f.prob)}</span></div>
+        <div class="fbar" title="${above ? "Above" : "Below"} the operating point of ${pct(f.op_threshold)}"><i class="${above ? "above" : f.in_score ? "scored" : "other"}" style="width:${Math.max(1, pos(f.prob))}%"></i><b style="left:calc(${pos(f.op_threshold)}% - 1px)"></b></div>
+        <div class="fmeta"><span>library ${f.library_output.toFixed(3)}</span><span>operating point ${pct(f.op_threshold)}</span>${f.calibrated !== null ? `<span>calibrated ${pct(f.calibrated)}</span>` : ""}</div>
+      </div>`;
+  };
+  const scored = L.findings.filter(f => f.in_score).sort(order);
+  const other = L.findings.filter(f => !f.in_score).sort(order);
+  box.innerHTML = `
+    <div class="faxis"><span>0.01%</span><span>0.1%</span><span>1%</span><span>10%</span><span>100%</span></div>
+    <div class="fgroup"><div class="fgroup-h"><span>In the normality score</span><span>7</span></div>${scored.map(row).join("")}</div>
+    <div class="fgroup"><div class="fgroup-h"><span>Reported only</span><span>7</span></div>${other.map(row).join("")}</div>`;
+}
+
+/* ---------- ground truth */
+function renderTruth() {
+  const R = state.res, box = $("#truth");
+  if (!R) return;
+  const c7 = state.meta.common7;
+  let html = "";
+  if (state.sample) html += `<p class="rule-note" style="margin:0 0 12px">${esc(state.sample.caption)}</p>`;
+  if (!R.known) {
+    html += `<p class="note" style="margin:0">This file name is not a ChestX-ray14 image index, so there are no report labels or stored research outputs to compare with. The verdicts above are the demo's own.</p>`;
+    box.innerHTML = html;
+    return;
+  }
+  const K = R.known;
+  const splitNote = { test: "never used for fitting or thresholds", calib: "the split thresholds were chosen on", train: "the split the calibrators and combiners were fitted on" }[K.split];
+  html += `
+    <dl class="kv">
+      <dt>Image</dt><dd class="mono">${esc(K.image_index)}</dd>
+      <dt>Split</dt><dd>${esc(K.split)} <span style="color:var(--muted)">(${splitNote})</span></dd>
+      <dt>Report</dt><dd><div class="flist">${K.findings.length ? K.findings.map(f => `<span class="${c7.includes(f) ? "c7" : ""}">${nice(f)}</span>`).join("") : "<span>no finding</span>"}</div></dd>
+      <dt>Normal here</dt><dd>${K.normal7 ? "Yes, none of the seven scored findings" : "No, at least one of the seven scored findings"}</dd>
+    </dl>`;
+  const rows = state.meta.checkpoints.map(ck => {
+    const m = K.per_checkpoint[ck.key];
+    if (!m || m.verdict_cells === undefined) return `<div class="match-row"><span>${esc(ck.name)}</span><span class="mono">stored scores not available</span><span></span></div>`;
+    const ok = m.verdicts_agree === m.verdict_cells;
+    return `<div class="match-row"><span>${esc(ck.name)}</span><span class="mono">max |&Delta;score| ${m.max_score_diff.toFixed(4)}</span><span class="mini ${ok ? "clear" : "refer"}">${m.verdicts_agree}/${m.verdict_cells}</span></div>`;
+  }).join("");
+  html += `<div class="match"><div class="fgroup-h"><span>Live vs stored research outputs</span><span>verdicts agree</span></div>${rows}
+    <p class="note">The stored outputs come from the pipeline's GPU run in float16. Run live on a CPU, the network works in float32, so probabilities differ in the third decimal place and the learned and calibrated scores by up to a few hundredths. A study that close to a threshold can change verdict; on 500 test images that happened in 9 of 82,000 verdicts.</p></div>`;
+  box.innerHTML = html;
+}
+
+function renderRuleInfo() {
+  const p = procMeta(), ck = ckMeta();
+  const rc = state.meta.constructions.filter(c => c.risk_control).map(c => c.key).join(", ");
+  $("#ruleInfo").innerHTML = `
+    <p><b style="color:var(--text);font-weight:500">${esc(p.name)} at NPV ${state.target}.</b> ${esc(p.note)}</p>
+    <p>Thresholds were chosen on the calibration split of NIH ChestX-ray14 and checked once on its test split (${ck.test_images.toLocaleString("en-US")} images, ${pct(ck.test_normal_rate, 1)} normal). They do not carry over to another hospital's images.</p>
+    <p style="margin:0;color:var(--muted)">Learn-Then-Test was run on ${rc}.</p>`;
+}
+
+/* ---------- simple view
+   One model (PadChest, the study's headline checkpoint), the three scores the
+   story turns on, two rules and two promises, in plain words. Every number
+   comes from the same results and rule tables as the detailed view. */
+const PLAIN = {
+  Atelectasis: "Collapsed part of a lung", Cardiomegaly: "Enlarged heart", Consolidation: "Part of a lung filled with fluid",
+  Edema: "Fluid inside the lungs", Effusion: "Fluid around the lungs", Pneumonia: "Lung infection", Pneumothorax: "Air leak around a lung",
+  Mass: "Lung mass", Nodule: "Small lump (nodule)", Infiltration: "Hazy area (infiltration)", Emphysema: "Damaged air sacs (emphysema)",
+  Fibrosis: "Scarring (fibrosis)", Pleural_Thickening: "Thickened lung lining", Hernia: "Hernia",
+};
+const S_CONS = [
+  { key: "A", name: "The published score", how: "Looks only at the single most worrying finding and ignores the rest: 1 minus the highest chance. A published study used this one." },
+  { key: "B_cal", name: "The calibrated product", how: "Corrects each finding's chance first, then multiplies the chances that each finding is absent. The study's cheap fix." },
+  { key: "D", name: "The image reader", how: "Skips the findings and judges the whole image directly. Trained on about 67,000 X-rays whose reports are known." },
+];
+const S_RULES = [
+  { key: "empirical", name: "Quick rule", sub: "Aims exactly at the promise. No guarantee: misses it about half the time." },
+  { key: "bonferroni", name: "Safe rule", sub: "Keeps a safety margin, so the promise should hold. Clears far fewer X-rays." },
+];
+const SAMPLE_PLAIN = {
+  normal_cleared: ["A normal X-ray", "Report: no finding"],
+  normal_referred: ["Normal, but sent to a doctor", "Report: no finding"],
+  cardiomegaly: ["Enlarged heart", "Report: cardiomegaly"],
+  effusion: ["Fluid around the lungs", "Report: effusion"],
+  pneumothorax: ["Air leak around a lung", "Report: pneumothorax"],
+  bound_clears_abnormal: ["Sick, but score A clears it", "Report: atelectasis · quick rule"],
+  mass_only: ["Lung mass", "Counts as normal in this project"],
+};
+const GLOSS = [
+  ["auto", "Auto-clear", "The AI marks the X-ray normal, and no doctor reads it."],
+  ["refer", "Send to a radiologist", "A doctor reads the X-ray, as happens today without the AI."],
+  ["score", "Score", "One number per X-ray, between 0 and 1, built from the AI's findings. Higher means more likely normal."],
+  ["line", "Line", "The cut-off for a score. An X-ray whose score is at or above the line is auto-cleared. Researchers call it the threshold."],
+  ["promise", "Promise", "How many of every 100 auto-cleared X-rays must really be normal. 95 in 100 means at most 5 sick ones slip through. Researchers call this the NPV."],
+  ["rule", "Quick rule", "Picks the most generous line that kept the promise on one group of 17,054 X-rays (the calibration group). It has no guarantee, and on new X-rays it misses the promise about half the time. Researchers call it the empirical target."],
+  ["safe", "Safe rule", "Accepts a line only if the data show the promise holds even after allowing for bad luck, and it may get this wrong at most 1 time in 20, if every X-ray counts as independent. One patient can have several X-rays, so treat that as a best case. When no line passes, the score clears nothing. Researchers call it Learn-Then-Test, here in its Bonferroni version."],
+  ["cal", "Calibrated", "A chance is calibrated when it comes true as often as it says: of all the X-rays given a 10% chance of fluid, about 10 in 100 really have fluid."],
+  ["test", "Test X-rays", "27,923 X-rays kept aside and never used to fit anything or pick a line, so they give a fair check of every line."],
+  ["normal", "Normal", "In this project, none of the seven findings in the radiologist's report. A lung mass is not one of them, so an X-ray with only a mass counts as normal."],
+];
+
+function cellAt(ck, cons, proc, target) {
+  const meta = state.meta.checkpoints.find(c => c.key === ck);
+  const r = meta.rules[cons][proc];
+  if (!r || !r[target]) return { run: false };
+  const L = state.res ? state.res.results[ck] : null;
+  return { run: true, ...r[target], clear: L ? L.verdicts[cons][proc][target] : null };
+}
+const per100 = c => c >= 0.1 ? `${Math.round(c * 100)} in every 100` : c > 0 ? `${Math.max(1, Math.round(c * 1000))} in every 1,000` : "none";
+const dec = (x, other) => x.toFixed(other !== undefined && Math.abs(x - other) < 0.0005 ? 4 : 3);
+const names = list => list.length <= 1 ? list.join("") : list.slice(0, -1).join(", ") + " and " + list[list.length - 1];
+
+function sOutcome(clear, known) {
+  if (!known) return null;
+  if (known.normal7) return clear ? ["good", "Right call: a normal X-ray, cleared"] : ["meh", "Safe, but a doctor reads a normal X-ray"];
+  return clear ? ["bad", "Wrong call: a sick X-ray, cleared"] : ["good", "Right call: sent to a doctor"];
+}
+
+function renderSimpleControls() {
+  $("#sRule").innerHTML = S_RULES.map(r => `
+    <button class="opt ${r.key === state.sRule ? "on" : ""}" data-srule="${r.key}">
+      <span class="t">${r.name}</span><span class="s">${r.sub}</span>
+    </button>`).join("");
+  $("#sRule").querySelectorAll(".opt").forEach(b => b.onclick = () => { state.sRule = b.dataset.srule; renderSimple(); });
+  $("#sPromise").innerHTML = ["0.95", "0.98"].map(t => `<button data-st="${t}" class="${t === state.sTarget ? "on" : ""}">${Math.round(t * 100)} in 100</button>`).join("");
+  $("#sPromise").querySelectorAll("button").forEach(b => b.onclick = () => { state.sTarget = b.dataset.st; renderSimple(); });
+  $("#sGloss").innerHTML = GLOSS.map(([k, w, d]) => `<dt data-g="${k}">${w}</dt><dd data-g="${k}">${d}</dd>`).join("");
+}
+
+function renderSimpleSamples() {
+  $("#sSamples").innerHTML = state.meta.samples.map((s, i) => {
+    const [t, sub] = SAMPLE_PLAIN[s.kind] || [s.title, s.file];
+    return `<button class="sample ${state.sample && state.sample.file === s.file ? "on" : ""}" data-i="${i}">
+      <img src="/samples/${encodeURIComponent(s.file)}" alt=""><span><span class="t">${esc(t)}</span><br><span class="s">${esc(sub)}</span></span></button>`;
+  }).join("");
+  $("#sSamples").querySelectorAll(".sample").forEach(b => b.onclick = () => pickSample(state.meta.samples[+b.dataset.i]));
+}
+
+function sMeter(s, t) {
+  const w = Math.max(0.02, Math.abs(s - t) * 1.4);
+  const lo = Math.max(0, t - w), hi = Math.min(1, t + w);
+  const at = v => ((v - lo) / (hi - lo) * 100).toFixed(1);
+  return `<div class="s-meter"><span class="z r" style="width:${at(t)}%"></span><span class="z c" style="width:${100 - at(t)}%"></span><i class="ln" style="left:${at(t)}%"></i><b class="dot" style="left:${at(s)}%"></b></div>
+    <div class="s-axis"><span>${lo.toFixed(3)}</span><em>below: send to a doctor · above: auto-clear</em><span>${hi.toFixed(3)}</span></div>`;
+}
+
+function renderSimple() {
+  if (!state.meta) return;
+  renderSimpleControls();
+  renderSimpleSamples();
+  const R = state.res, ck = "pc", P = state.sRule, T = state.sTarget;
+  const img = $("#sXray");
+  $("#sEmpty").hidden = !!R;
+  img.hidden = !R;
+  if (!R) return;
+  img.src = state.src;
+  img.style.filter = "url(#duo)";
+  const K = R.known;
+  $("#sFile").textContent = state.sample ? (SAMPLE_PLAIN[state.sample.kind] || [state.sample.title])[0] : R.file;
+  $("#sFile2").textContent = K ? `Test X-ray ${R.file}` : "Your upload";
+  const L = R.results[ck], meta = state.meta.checkpoints.find(c => c.key === ck);
+  const allowed = Math.round((1 - +T) * 1000), promise = Math.round(+T * 100);
+
+  // the three cards
+  const cells = S_CONS.map(c => ({ c, x: cellAt(ck, c.key, P, T), s: L.scores[c.key] }));
+  $("#sCards").innerHTML = cells.map(({ c, x, s }) => {
+    const none = x.threshold === null;
+    const clear = !none && x.clear;
+    const out = sOutcome(clear, K);
+    let test;
+    if (none) test = `The ${P === "empirical" ? "quick" : "safe"} rule found no line it could trust for this score, so the score clears nothing at this promise. Every X-ray goes to a doctor.`;
+    else if (!x.n) test = `On the ${meta.test_images.toLocaleString("en-US")} test X-rays this line cleared none.`;
+    else {
+      const sick = Math.round((1 - x.npv) * 1000);
+      test = `On the ${meta.test_images.toLocaleString("en-US")} test X-rays this line cleared <b>${per100(x.coverage)}</b>. Among every 1,000 it cleared, <b>${sick}</b> were sick, and the promise allows ${allowed}: ${x.holds ? '<span class="ok">promise kept</span>' : '<span class="no">promise missed</span>'}.`;
+    }
+    return `<article class="s-card ${clear ? "clear" : "refer"}">
+      <div class="sc-head"><span class="code">${esc(c.key)}</span><div class="cname">${c.name}</div></div>
+      <p class="how">${c.how}</p>
+      <div class="s-nums"><div><small>Score</small><span>${dec(s, none ? undefined : x.threshold)}</span></div><div><small>Line</small><span>${none ? "none" : dec(x.threshold, s)}</span></div></div>
+      ${none ? "" : sMeter(s, x.threshold)}
+      ${clear ? `<span class="pill clear">${ICON.check}AUTO-CLEAR</span>` : `<span class="pill refer">${ICON.refer}SEND TO A RADIOLOGIST</span>`}
+      ${out ? `<div class="s-out ${out[0]}">${out[1]}</div>` : ""}
+      <div class="s-test">${test}</div>
+    </article>`;
+  }).join("");
+
+  // the answer
+  const clears = cells.filter(e => e.x.threshold !== null && e.x.clear);
+  const noLine = cells.filter(e => e.x.threshold === null);
+  const k = clears.length;
+  let html = `<div class="s-head">${k === 0 ? `No score would <span class="r">auto-clear</span> it` : k === 3 ? `All three scores would <span class="c">auto-clear</span> it` : `${k} of 3 scores would <span class="c">auto-clear</span> it`}</div>
+    <div class="s-badges">${cells.map(({ c, x }) => { const cl = x.threshold !== null && x.clear; return `<span class="s-badge ${cl ? "clear" : "refer"}"><span class="code">${esc(c.key)}</span>${cl ? "clears" : x.threshold === null ? "no line" : "sends to a doctor"}</span>`; }).join("")}</div>
+    <p class="s-sub">Using the ${P === "empirical" ? "quick" : "safe"} rule and a promise of ${promise} normal in every 100 cleared.${noLine.length ? ` The ${P === "empirical" ? "quick" : "safe"} rule found no line for ${names(noLine.map(e => e.c.key))} at this promise, so ${noLine.length > 1 ? "those scores clear" : "that score clears"} nothing.` : ""}</p>`;
+  if (K) {
+    const rep = K.findings.length ? K.findings.map(f => `<span class="${state.meta.common7.includes(f) ? "c7" : ""}">${esc(PLAIN[f] || nice(f))}</span>`).join("") : "<span>No finding</span>";
+    const seven = K.findings.filter(f => state.meta.common7.includes(f));
+    html += `<div class="s-report"><div class="label" style="margin:0">The radiologist's report says</div><div class="flist">${rep}</div>
+      <p class="s-sub" style="margin:0">${K.normal7 ? "So in this project it counts as <b>normal</b>: none of the seven findings is there." : `So it is <b>not normal</b> here, because ${seven.length > 1 ? `${names(seven.map(f => (PLAIN[f] || nice(f)).toLowerCase()))} are among` : `a ${(PLAIN[seven[0]] || nice(seven[0])).toLowerCase()} is one of`} the seven findings.`}</p></div>`;
+    const sickClears = !K.normal7 && k > 0, refs = cells.filter(e => !(e.x.threshold !== null && e.x.clear)).map(e => e.c.key);
+    const other = K.findings.filter(f => !state.meta.common7.includes(f));
+    const byDef = K.normal7 && other.length ? "By this project's definition, " : "";
+    let call;
+    if (sickClears) call = ["bad", `<b>Wrong call by ${names(clears.map(e => e.c.key))}.</b> ${k > 1 ? "These scores" : "This score"} would clear a sick X-ray, and no doctor would look at it.`];
+    else if (!K.normal7) call = ["good", "<b>Right call by all three.</b> A sick X-ray goes to a doctor."];
+    else if (k === 3) call = ["good", `<b>${byDef ? byDef + "a right call" : "Right call"} by all three.</b> A normal X-ray is cleared, and a radiologist's time is saved.`];
+    else if (k > 0) call = ["meh", `<b>${byDef ? byDef + "clearing" : "Clearing"} it would be right.</b> ${names(refs)} send${refs.length > 1 ? "" : "s"} it to a doctor anyway, which is safe but costs a radiologist's time.`];
+    else call = ["meh", `<b>Safe, but not needed${byDef ? " by this project's definition" : ""}.</b> The X-ray counts as normal, yet every score sends it to a doctor, which costs a radiologist's time.`];
+    html += `<div class="s-call ${call[0]}">${call[1]}</div>`;
+    if (K.normal7 && other.length) html += `<div class="s-call note">The report also lists ${names(other.map(f => (PLAIN[f] || nice(f)).toLowerCase()))}, which is not one of the seven findings, so this project counts the X-ray as normal. A real doctor would want to see it.</div>`;
+  } else {
+    html += `<div class="s-call note">This X-ray is not from the dataset, so there is no report to check the decision against. The lines were chosen on NIH ChestX-ray14 and may not suit X-rays from another hospital.</div>`;
+  }
+  $("#sAnswer").innerHTML = html;
+
+  // what the AI saw
+  const seven = L.findings.filter(f => f.in_score).sort((a, b) => b.prob - a.prob);
+  const top = Math.max(...seven.map(f => f.prob));
+  $("#sFindings").innerHTML = seven.map((f, i) => `
+    <div class="s-frow"><span class="n">${esc(PLAIN[f.label] || nice(f.label))}<small>${nice(f.label)}</small></span><span class="v">${f.prob < 0.00001 ? "&lt;0.001%" : pct(f.prob)}</span>
+      <div class="fbar"><i class="scored" style="width:${Math.max(1.5, f.prob / top * 100)}%"></i></div></div>`).join("")
+    + `<p class="note">The highest of these, ${esc((PLAIN[seven[0].label] || nice(seven[0].label)).toLowerCase())} at ${pct(seven[0].prob)}, sets score A: 1 &minus; ${seven[0].prob.toFixed(4)} = ${L.scores.A.toFixed(3)}.</p>`;
+}
+
+function setView(v, save = true) {
+  state.view = v === "detailed" ? "detailed" : "simple";
+  document.body.classList.toggle("view-simple", state.view === "simple");
+  document.body.classList.toggle("view-detailed", state.view === "detailed");
+  document.querySelectorAll("#viewTabs button").forEach(b => b.classList.toggle("on", b.dataset.view === state.view));
+  if (save) store.set("view", state.view);
+}
+document.querySelectorAll("#viewTabs button").forEach(b => b.onclick = () => { setView(b.dataset.view); window.scrollTo({ top: 0 }); });
+$("#sToDetailed").onclick = () => { setView("detailed"); window.scrollTo({ top: 0 }); };
+$("#sFileInput").onchange = e => { useFile(e.target.files[0]); e.target.value = ""; };
+const sDrop = $("#sDrop");
+["dragenter", "dragover"].forEach(ev => sDrop.addEventListener(ev, e => { e.preventDefault(); sDrop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => sDrop.addEventListener(ev, e => { e.preventDefault(); sDrop.classList.remove("over"); }));
+sDrop.addEventListener("drop", e => { e.stopPropagation(); useFile(e.dataTransfer.files[0]); });
+document.addEventListener("click", e => {
+  const q = e.target.closest("button.q");
+  if (!q) return;
+  const items = document.querySelectorAll(`#sGloss [data-g="${q.dataset.g}"]`);
+  if (!items.length) return;
+  items[0].scrollIntoView({ behavior: "smooth", block: "center" });
+  items.forEach(x => x.classList.add("flash"));
+  setTimeout(() => items.forEach(x => x.classList.remove("flash")), 1800);
+});
+
+
+function renderAll() {
+  if (!state.meta) return;
+  renderSimple();
+  renderControls();
+  renderViewer();
+  renderScores();
+  renderMatrix();
+  renderFindings();
+  renderTruth();
+  renderRuleInfo();
+}
+
+/* ---------- start
+   The address can preselect a view, e.g. /?sample=00004363_000.png&ck=chex&proc=bonferroni&t=0.98&theme=light
+   (detailed view; add &view=detailed) or /?sample=00004363_000.png&rule=safe&promise=98 (simple view) */
+(async function init() {
+  const q = new URLSearchParams(location.search);
+  applyTheme(q.get("theme") || store.get("theme") || "dark");
+  const wantView = q.get("view") || ((q.get("ck") || q.get("proc")) ? "detailed" : store.get("view"));
+  setView(wantView || "simple", false);
+  if (q.get("rule") === "safe") state.sRule = "bonferroni";
+  if (q.get("promise") === "98") state.sTarget = "0.98";
+  try {
+    const r = await fetch("/api/meta");
+    state.meta = await r.json();
+  } catch (e) {
+    $("#deviceChip").textContent = "server offline";
+    toast("Could not reach the demo server. Start it with: python 17_demo.py");
+    return;
+  }
+  $("#deviceChip").textContent = "Model on " + state.meta.device.toUpperCase();
+  $("#buildInfo").textContent = `Components refitted from 13_analysis.py and checked to match its cached scores exactly on all ${state.meta.checkpoints[0].checks.images_scored_exactly.toLocaleString("en-US")} images (built ${state.meta.built}).`;
+  if (state.meta.checkpoints.some(c => c.key === q.get("ck"))) state.ck = q.get("ck");
+  if (state.meta.procedures.some(p => p.key === q.get("proc"))) state.proc = q.get("proc");
+  if (q.get("t")) state.target = q.get("t");
+  if (!procMeta().targets.includes(state.target)) state.target = procMeta().targets[0];
+  renderSamples();
+  renderAll();
+  const s = state.meta.samples;
+  const want = q.get("sample");
+  const first = s.find(x => x.file === want) || s[+want] || s[0];
+  if (first) pickSample(first);
+})();
+</script>
+</body>
+</html>
