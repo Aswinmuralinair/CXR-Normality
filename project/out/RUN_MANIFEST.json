@@ -1,0 +1,62 @@
+{
+ "written": "2026-10-10",
+ "python": "3.12.10",
+ "platform": "Windows-11-10.0.26200-SP0",
+ "packages": {
+  "torch": "2.5.1+cu121",
+  "torchvision": "0.20.1+cu121",
+  "torchxrayvision": "1.5.4",
+  "numpy": "2.5.2",
+  "pandas": "3.0.5",
+  "scipy": "1.18.1",
+  "sklearn": "1.9.0",
+  "matplotlib": "3.11.1",
+  "cv2": "5.0.0"
+ },
+ "seed": 0,
+ "model_weights": {
+  "pc": "densenet121-res224-pc",
+  "chex": "densenet121-res224-chex",
+  "mimic_ch": "densenet121-res224-mimic_ch",
+  "nih": "densenet121-res224-nih"
+ },
+ "dataset": "NIH ChestX-ray14, Kaggle mirror khanfashee/nih-chest-x-ray-14-224x224-resized (224 px)",
+ "splits": "patient-level 60/15/25, see 01_make_splits.py",
+ "files_sha256": {
+  "splits.csv": "f78a0d7cc0ceebc6ede5e163dffb0ef9dce4908cd4561b9c08a17ad62395fddd",
+  "valid_idx.npy": "acdd4a969b0736c364aaeabb8d48019590b90a5e12dad05beee634136449d407",
+  "op_threshs.json": "a7c4fc6028608707cb22db72be782b47db525818b762b5a3af588fa533783e99",
+  "opnorm_fix.csv": "d49d90fd1d7e2689464e00b17ec7d8ebfa4bd7d7db9ea027ce3c797d38b13cfb",
+  "_rev3_numbers.txt": "0223c90de8439093e2dad27701ebba51892e9a0a02524fe4428cafb3004a81dd",
+  "labels_pc.json": "b6b3b4848df508fdfa72314386e8428f3730d602fd9034cd7d1cb5a79e30a339",
+  "labels_chex.json": "6dfb3980ef42a6aabdedf5a141cc2663dcda1bbde30309353213b72877aab86d",
+  "labels_mimic_ch.json": "6dfb3980ef42a6aabdedf5a141cc2663dcda1bbde30309353213b72877aab86d",
+  "labels_nih.json": "788814a00c73ebc4ca6744106df5f1925307bd6807112fc29a3ff8135f543f68",
+  "probs_pc.npy": "3bfbc40f083398484037ac01e17f5ed0ddf0eb53416d60810c4473424ca6b1fc",
+  "probs_chex.npy": "2998d7807c8aceca9dff8284a1f01beef92408c86fd6131d1b953b95c43d4164",
+  "probs_mimic_ch.npy": "41e5e9ab0b2096324880806a5824ec398ef53a279620041971b12982dbaed138",
+  "probs_nih.npy": "bce6004c6d64e5ffd38dbe28b84d657a34897448dfc4687099190c80340d2f96",
+  "probsraw_pc.npy": "1532bf36328cae8dcb23ee01098f8be81314fdd7b0ebe768c60ce1e246ff9193",
+  "probsraw_chex.npy": "a7ca87432c93338f124d0588e2c5ab1e1249e968883775d22499d18cd3b104b6",
+  "probsraw_mimic_ch.npy": "98bcf8eab70c563150caff56efe723a1a344c2846d5e6cd4697ce18b7b54f11d",
+  "probsraw_nih.npy": "57d0f13646fa4b24980ecc70d633ee57e37265df60e0529100e2020d6a64285f",
+  "rev3_bottleneck.csv": "499b2342a4041c8240c768ac72117f92d2647c02b6e627ae34b6ce8006ab25ad",
+  "rev3_bottleneck_decomp.csv": "7562e0718355b129ebaa584cb0909a3dd9cfe585cad1c337ed2911844afd7237",
+  "rev3_dependence.csv": "bcf67476a07c0d00b402c58fc76ad134b59a8211f97539ebb14301fb94417e24",
+  "rev3_main.csv": "14c0b59741f1d3d94ebe0ce6c49b08f48b299b20dd060f18df6a05c3a967686b",
+  "rev3_nih14.csv": "7cc1ae6f25612897e55013f9bd74b49d21a4eaa93fdff89b1fc633f6ba8e0f02",
+  "rev3_resplit_diagnostic.csv": "7cb00173fd3e482b614c84eb55d94e5dd6f0de3dfd9d2f1db5c881b8f4cd0fd0",
+  "rev3_riskcontrol.csv": "1e56b107b6374e7c2c6a1a7e1546142734fa0227c36d7b8d10820b4795e77154",
+  "rev3_label_meta.json": "9890f73368719279b3764b2d67376cbcf249158f5d1dc6725c3b7f7ebb990b5d",
+  "outside_auc.csv": "c07644dc9b6f9ec81352cf2fbab494efa5c068175442ed5f2cc710a71d7db799",
+  "outside_by_finding.csv": "a85a1fdfa38f3b5b23ec4150f7899b1a848fb811efe000e93b6cc72f1e51753c",
+  "outside_rules.csv": "f057c6560ca085752df977bbc4cf4045bd81c26d7f5f9e40e459aace887f3a5f",
+  "design_effect.csv": "0026dc14d7b5c3bfb1d2eb5389378fdc758bd169952e5f3d34d30757092df60e",
+  "demo_models.pkl": "2368fb64d6fc20bcc1d821d44eab3441ff16f590b61f810d8dc28cb020d10d3e"
+ },
+ "cuda": {
+  "available": true,
+  "build": "12.1",
+  "device": "NVIDIA GeForce RTX 4050 Laptop GPU"
+ }
+}

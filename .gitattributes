@@ -1,0 +1,3 @@
+# Result files are stored byte for byte as written, so the SHA-256 hashes in
+# project/out/RUN_MANIFEST.json match a fresh clone on any system.
+project/out/** -text
